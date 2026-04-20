@@ -1,20 +1,19 @@
 services:
 
   db:
-    image: mysql:8.0
+    image: postgres:16-alpine
     container_name: aire-ok-db-local
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: aire_ok_db
-      MYSQL_USER: aire_ok_user
-      MYSQL_PASSWORD: aire_ok_pass
+      POSTGRES_DB: aire_ok_db
+      POSTGRES_USER: aire_ok_user
+      POSTGRES_PASSWORD: aire_ok_pass
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      test: ["CMD-SHELL", "pg_isready -U aire_ok_user -d aire_ok_db"]
       interval: 10s
       timeout: 5s
       retries: 10

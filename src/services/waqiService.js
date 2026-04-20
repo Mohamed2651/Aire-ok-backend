@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { pool } = require('../db/database');
+const { query } = require('../db/database');
 
 const WAQI_BASE = 'https://api.waqi.info';
 const SPAIN_BOUNDS = '27.6,-18.2,43.8,4.4';
@@ -7,12 +7,12 @@ const SPAIN_BOUNDS = '27.6,-18.2,43.8,4.4';
 function nivelICA(aqi) {
   if (aqi === null || aqi === undefined || aqi === '-') return { nivel: 'sin_datos', color: '#9E9E9E' };
   const v = parseInt(aqi);
-  if (v <= 50)  return { nivel: 'bueno',                    color: '#4CAF50' };
-  if (v <= 100) return { nivel: 'moderado',                 color: '#FFEB3B' };
-  if (v <= 150) return { nivel: 'no_saludable_sensibles',   color: '#FF9800' };
-  if (v <= 200) return { nivel: 'no_saludable',             color: '#F44336' };
-  if (v <= 300) return { nivel: 'muy_no_saludable',         color: '#9C27B0' };
-  return         { nivel: 'peligroso',                      color: '#7B0000' };
+  if (v <= 50)  return { nivel: 'bueno',                  color: '#4CAF50' };
+  if (v <= 100) return { nivel: 'moderado',               color: '#FFEB3B' };
+  if (v <= 150) return { nivel: 'no_saludable_sensibles', color: '#FF9800' };
+  if (v <= 200) return { nivel: 'no_saludable',           color: '#F44336' };
+  if (v <= 300) return { nivel: 'muy_no_saludable',       color: '#9C27B0' };
+  return         { nivel: 'peligroso',                    color: '#7B0000' };
 }
 
 function parsearEstacion(item) {
@@ -75,8 +75,8 @@ async function obtenerEstacionCercana(lat, lon) {
   return parsearDetalle(response.data.data);
 }
 
-async function buscarEstacion(query) {
-  const url = `${WAQI_BASE}/search/?keyword=${encodeURIComponent(query)}&token=${process.env.WAQI_TOKEN}`;
+async function buscarEstacion(query_str) {
+  const url = `${WAQI_BASE}/search/?keyword=${encodeURIComponent(query_str)}&token=${process.env.WAQI_TOKEN}`;
   const response = await axios.get(url, { timeout: 10000 });
   if (response.data.status !== 'ok') return [];
   return response.data.data.map(item => ({
@@ -96,16 +96,19 @@ async function sincronizarEstacionesEspana() {
   for (const e of estaciones) {
     if (!e.lat || !e.lon) continue;
     try {
-      await pool.execute(
+      await query(
         `INSERT INTO estaciones (id_estacion, nombre, lat, lon)
-         VALUES (?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE nombre=VALUES(nombre), lat=VALUES(lat), lon=VALUES(lon)`,
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id_estacion) DO UPDATE SET
+           nombre = EXCLUDED.nombre,
+           lat    = EXCLUDED.lat,
+           lon    = EXCLUDED.lon`,
         [e.id_estacion, e.nombre, e.lat, e.lon]
       );
       if (e.ica !== null) {
-        await pool.execute(
+        await query(
           `INSERT INTO mediciones (id_estacion, fecha_hora, ica, contaminante_principal)
-           VALUES (?, NOW(), ?, 'AQI')`,
+           VALUES ($1, NOW(), $2, 'AQI')`,
           [e.id_estacion, e.ica]
         );
       }

@@ -1,5 +1,5 @@
 const express = require('express');
-const { pool } = require('../db/database');
+const { query } = require('../db/database');
 const { authMiddleware } = require('../middleware/auth');
 const {
   obtenerDetalleEstacion,
@@ -10,10 +10,10 @@ const {
 
 const router = express.Router();
 
-// GET /api/aire/estaciones — caché BD, se refresca cada hora
+// GET /api/aire/estaciones
 router.get('/estaciones', async (req, res) => {
   try {
-    const [rows] = await pool.execute(`
+    const result = await query(`
       SELECT e.*,
              m.ica, m.contaminante_principal, m.fecha_hora AS ultima_medicion
       FROM estaciones e
@@ -24,14 +24,14 @@ router.get('/estaciones', async (req, res) => {
       )
       ORDER BY e.nombre
     `);
-    res.json(rows);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener estaciones' });
   }
 });
 
-// GET /api/aire/estacion/:uid — detalle en tiempo real desde WAQI
+// GET /api/aire/estacion/:uid
 router.get('/estacion/:uid', async (req, res) => {
   try {
     const detalle = await obtenerDetalleEstacion(req.params.uid);
@@ -72,20 +72,20 @@ router.get('/buscar', async (req, res) => {
 router.get('/historial/:uid', authMiddleware, async (req, res) => {
   const dias = Math.min(parseInt(req.query.dias) || 7, 30);
   try {
-    const [rows] = await pool.execute(
+    const result = await query(
       `SELECT DATE(fecha_hora) AS fecha,
               ROUND(AVG(ica))  AS ica_medio,
               MAX(ica)         AS ica_max,
               MIN(ica)         AS ica_min
        FROM mediciones
-       WHERE id_estacion = ?
-         AND fecha_hora >= DATE_SUB(NOW(), INTERVAL ? DAY)
+       WHERE id_estacion = $1
+         AND fecha_hora >= NOW() - INTERVAL '1 day' * $2
          AND ica IS NOT NULL
        GROUP BY DATE(fecha_hora)
        ORDER BY fecha`,
       [req.params.uid, dias]
     );
-    res.json(rows);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener historial' });
