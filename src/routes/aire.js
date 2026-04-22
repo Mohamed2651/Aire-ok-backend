@@ -102,4 +102,17 @@ router.post('/sincronizar', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/estacion/:uid', async (req, res) => {
+  try {
+    const detalle = await obtenerDetalleEstacion(req.params.uid);
+    if (!detalle.nombre) {
+      return res.status(404).json({ error: 'Estación no encontrada' });
+    }
+    res.json(detalle);
+  } catch (err) {
+    console.error(err);
+    res.status(502).json({ error: 'No se pudo obtener el detalle de la estación' });
+  }
+});
+
 module.exports = router;
