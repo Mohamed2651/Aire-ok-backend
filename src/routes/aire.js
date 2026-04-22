@@ -15,7 +15,11 @@ router.get('/estaciones', async (req, res) => {
   try {
     const result = await query(`
       SELECT e.*,
-             m.ica, m.contaminante_principal, m.fecha_hora AS ultima_medicion
+             m.ica, m.contaminante_principal, m.fecha_hora AS ultima_medicion,
+             CASE 
+               WHEN m.fecha_hora >= NOW() - INTERVAL '3 hours' THEN true
+               ELSE false
+             END AS datos_frescos
       FROM estaciones e
       LEFT JOIN mediciones m ON m.id = (
         SELECT id FROM mediciones
