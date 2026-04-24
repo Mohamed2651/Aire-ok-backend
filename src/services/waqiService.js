@@ -19,7 +19,7 @@ function parsearEstacion(item) {
   const aqi = item.aqi !== '-' ? parseInt(item.aqi) : null;
   return {
     id_estacion: String(item.uid),
-    nombre: data.city?.name ?? null,
+    nombre: item.station?.name ?? null,
     lat: parseFloat(item.lat),
     lon: parseFloat(item.lon),
     ica: aqi,
