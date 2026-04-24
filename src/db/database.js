@@ -77,6 +77,16 @@ async function initDatabase() {
     )
   `);
 
+  await query(`
+  CREATE TABLE IF NOT EXISTS favoritos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    id_estacion VARCHAR(20) NOT NULL REFERENCES estaciones(id_estacion) ON DELETE CASCADE,
+    fecha_añadido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(usuario_id, id_estacion)
+  )
+`);
+
   console.log('Tablas listas.');
 }
 
