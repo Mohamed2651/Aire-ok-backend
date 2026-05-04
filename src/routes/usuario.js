@@ -76,6 +76,22 @@ router.post('/favoritos', authMiddleware, async (req, res) => {
   const { id_estacion } = req.body;
   if (!id_estacion) return res.status(400).json({ error: 'id_estacion es obligatorio' });
   try {
+    // Si la estación no existe en BD la creamos consultando WAQI
+    const existe = await query('SELECT id_estacion FROM estaciones WHERE id_estacion = $1', [id_estacion]);
+    if (existe.rows.length === 0) {
+      const { obtenerDetalleEstacion } = require('../services/waqiService');
+      const detalle = await obtenerDetalleEstacion(id_estacion);
+      if (!detalle || !detalle.lat || !detalle.lon) {
+        return res.status(404).json({ error: 'Estación no encontrada' });
+      }
+      await query(
+        `INSERT INTO estaciones (id_estacion, nombre, lat, lon)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id_estacion) DO NOTHING`,
+        [id_estacion, detalle.nombre, detalle.lat, detalle.lon]
+      );
+    }
+
     await query(
       'INSERT INTO favoritos (usuario_id, id_estacion) VALUES ($1, $2) ON CONFLICT DO NOTHING',
       [req.user.id, id_estacion]
