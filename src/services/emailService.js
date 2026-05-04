@@ -6,7 +6,7 @@ async function enviarEmailRecuperacion(email, nombre, token) {
 
   await resend.emails.send({
     from: 'Aire-OK <onboarding@resend.dev>',
-    to: email,
+    to: [email],
     subject: 'Recuperación de contraseña — Aire-OK',
     html: `
       <div style="font-family:Arial,sans-serif;max-width:500px;margin:40px auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
