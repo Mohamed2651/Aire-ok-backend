@@ -13,6 +13,7 @@ app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date() }));
 app.use('/api/auth',        require('./routes/auth'));
+app.use('/api/auth',        require('./routes/recuperar'));
 app.use('/api/aire',        require('./routes/aire'));
 app.use('/api/usuario',     require('./routes/usuario'));
 app.use('/api/incidencias', require('./routes/incidencias'));
