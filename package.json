@@ -16,7 +16,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "node-cron": "^3.0.3",
-    "resend": "^6.12.2"
+    "@getbrevo/brevo": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
