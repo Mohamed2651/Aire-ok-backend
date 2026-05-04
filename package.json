@@ -16,7 +16,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.0"
+    "resend": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
