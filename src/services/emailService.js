@@ -20,7 +20,6 @@ async function enviarEmailRecuperacion(email, nombre, token) {
             <a href="${resetUrl}" style="background:#4CAF50;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px">Restablecer contraseña</a>
           </div>
           <p><strong>Este enlace expira en 1 hora.</strong></p>
-          <p>Si no has solicitado este cambio, ignora este email.</p>
         </div>
         <div style="padding:16px 32px;background:#f9f9f9;text-align:center">
           <p style="color:#999;font-size:12px;margin:0">Aire-OK · Calidad del aire en tiempo real</p>
