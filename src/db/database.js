@@ -87,6 +87,16 @@ async function initDatabase() {
   )
 `);
 
+await query(`
+  CREATE TABLE IF NOT EXISTS reset_tokens (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT REFERENCES usuarios(id) ON DELETE CASCADE,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expira_en TIMESTAMP NOT NULL,
+    usado BOOLEAN DEFAULT FALSE
+  )
+`);
+
   console.log('Tablas listas.');
 }
 
