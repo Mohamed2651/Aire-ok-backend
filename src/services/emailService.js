@@ -4,7 +4,7 @@ async function enviarEmailRecuperacion(email, nombre, token) {
   const resetUrl = `aireok://reset-password?token=${token}`;
 
   await axios.post('https://api.brevo.com/v3/smtp/email', {
-    sender: { name: 'Aire-OK', email: 'no-reply@aire-ok.com' },
+    sender: { name: 'Aire-OK', email: 'aireokmanager@gmail.com' },
     to: [{ email }],
     subject: 'Recuperación de contraseña — Aire-OK',
     htmlContent: `
