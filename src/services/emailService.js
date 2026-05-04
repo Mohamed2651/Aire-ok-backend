@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function enviarEmailRecuperacion(email, nombre, token) {
-  const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
+  const resetUrl = `aireok://reset-password?token=${token}`;
 
   await transporter.sendMail({
     from: `"Aire-OK 🌿" <${process.env.GMAIL_USER}>`,
