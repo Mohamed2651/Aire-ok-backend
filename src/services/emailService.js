@@ -7,6 +7,8 @@ async function enviarEmailRecuperacion(email, nombre, token) {
     sender: { name: 'Aire-OK', email: 'aireokmanager@gmail.com' },
     to: [{ email }],
     subject: 'Recuperación de contraseña — Aire-OK',
+    trackClicks: false,
+    trackOpens: false,
     htmlContent: `
       <div style="font-family:Arial,sans-serif;max-width:500px;margin:40px auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
         <div style="background:linear-gradient(135deg,#4CAF50,#2196F3);padding:32px;text-align:center">
